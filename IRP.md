@@ -63,6 +63,7 @@ $$
   $$
 
 
+
 - 车辆不超载
   $$
   \begin{split}
@@ -81,6 +82,7 @@ $$
     $$
     I_i^{t-1}-d_i^t \geqslant B_i\ \ \ ,\ \ if \ Z_i^t=0
     $$
+
 
 
   - **综上**
@@ -107,14 +109,14 @@ $$
 - 仓库库存更新
   $$
   \begin{split}
-  I_0^t=I_0^{t-1}+d_0^t-Z_0^t\sum_{i\in R}w_i^t\ \ \ , \ \ t\in P
+  I_0^t=I_0^{t-1}+d_0^t-\sum_{i\in R}w_i^t\ \ \ , \ \ t\in P
   \end{split}\tag{7}
   $$
 
 - 客户库存更新
   $$
   \begin{split}
-  I_i^t=I_i^{t-1}-d_i^t+Z_i^tw_i^t\ \ \ ,\ \ i\in R,t\in P
+  I_i^t=I_i^{t-1}-d_i^t+w_i^t\ \ \ ,\ \ i\in R,t\in P
   \end{split}\tag{8}
   $$
 
@@ -136,6 +138,7 @@ $$
   t\in P\ \ ,\ 1\leqslant u_i^t\ ,\ u_j^t\leqslant|N|
   \end{split}\tag{10}
   $$
+
 
 
 
