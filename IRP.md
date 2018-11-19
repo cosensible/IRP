@@ -62,33 +62,33 @@ $$
   $$
 
 
+
 - 如果不访问仓库 $i$ ，则配送量为零；如果访问它，则配送量大于零
   $$
   \begin{eqnarray*}
-  w_i^t+(1-Z_i^t)>0 \tag{3} \\
-  \\ 
-  w_i^t\leqslant Q*Z_i^t \tag{4} \\
+  w_i^t\leqslant Q*Z_i^t \tag{3} \\
   \\
   i \in R\ \ ,\ \ t\in P
   \end{eqnarray*}
   $$
 
 
+
 - 车辆不超载
   $$
   \begin{split}
   \sum_{i\in R}w_i^t-Q\leqslant 0 \ \ \ , \ \ \ t\in P
-  \end{split}\tag{5}
+  \end{split}\tag{4}
   $$
 
-- 客户每周期库存不超过客户容量 $C_i$ ，不低于最低库存量 $B_i$ 
+- 客户每周期库存不超过客户容量 $C_i$ ，不低于最低库存量 $B_i$ ，（先送货后消耗）
 
 
 $$
 \begin{eqnarray*}
-I_i^{t-1}+w_i^t-C_i\leqslant 0 \tag{6} \\
+I_i^{t-1}+w_i^t-C_i\leqslant 0 \tag{5} \\
 \\ 
-I_i^{t-1}-d_i^t-B_i\geqslant 0 \tag{7} \\
+I_i^{t}-B_i\geqslant 0 \tag{6} \\
 \\
 i\in R,t\in P
 \end{eqnarray*}
@@ -98,21 +98,21 @@ $$
   $$
   \begin{split}
   I_0^{t-1}-\sum_{i \in R}w_i^t \geqslant 0 \ \ \ , \ \ t\in P
-  \end{split}\tag{8}
+  \end{split}\tag{7}
   $$
 
 - 仓库库存更新
   $$
   \begin{split}
   I_0^t=I_0^{t-1}+d_0^t-\sum_{i\in R}w_i^t\ \ \ , \ \ t\in P
-  \end{split}\tag{9}
+  \end{split}\tag{8}
   $$
 
 - 客户库存更新
   $$
   \begin{split}
   I_i^t=I_i^{t-1}-d_i^t+w_i^t\ \ \ ,\ \ i\in R,t\in P
-  \end{split}\tag{10}
+  \end{split}\tag{9}
   $$
 
 - 车辆形成回路，且保持度约束
@@ -120,7 +120,7 @@ $$
   \begin{eqnarray*}
   \sum_{j\in N}x_{ij}^t=
   \sum_{j\in N}x_{ji}^t=
-  Z_i^t \tag{11} \ \ \ \ \ \ 
+  Z_i^t \tag{10} \ \ \ \ \ \ 
   i\in N\ ,\ i\neq j\ ,\ t\in P
   \end{eqnarray*}
   $$
@@ -131,7 +131,7 @@ $$
   u_i^t-u_j^t+|N|x_{ij}^t\leqslant |N|-1\ \ \ ,\ \ \ i,j\in R,i\neq j \\
   \\
   t\in P\ \ ,\ 1\leqslant u_i^t\ ,\ u_j^t\leqslant|N|
-  \end{split}\tag{12}
+  \end{split}\tag{11}
   $$
 
 
@@ -139,3 +139,6 @@ $$
 
 
 
+## 尝试
+
+把条件（7）换成 $I_i^{t-1}-d_i^t-B_i \geqslant 0$。
