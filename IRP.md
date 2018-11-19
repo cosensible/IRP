@@ -1,11 +1,3 @@
-<p style="text-align: center; font-size: 32px; font-weight:bold;">
-  IRP
-</p>
-
-
-
-
-
 # IRP
 
 ## Known
@@ -62,7 +54,6 @@ $$
   $$
 
 
-
 - 如果不访问仓库 $i$ ，则配送量为零
   $$
   \begin{eqnarray*}
@@ -71,7 +62,6 @@ $$
   i \in R\ \ ,\ \ t\in P
   \end{eqnarray*}
   $$
-
 
 
 - 车辆不超载
@@ -133,8 +123,6 @@ $$
   t\in P\ \ ,\ 1\leqslant u_i^t\ ,\ u_j^t\leqslant|N|
   \end{split}\tag{11}
   $$
-
-
 
 
 
