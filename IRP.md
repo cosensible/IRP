@@ -20,15 +20,14 @@
 
 ### Constant
 
-| Constant | Description                          | Type | Range     | Remark             |
-| -------- | ------------------------------------ | ---- | --------- | ------------------ |
-| $a_i$    | 单位库存持有成本(仓库和客户)         | real |           | $i\in N$           |
-| $Q$      | 车的容量                             | real |           |                    |
-| $M$      | 无穷大数                             | real | $+\infty$ |                    |
-| $B_i$    | 客户 $i$ 的最低库存水平              | real |           | $i\in R$           |
-| $C_i$    | 客户 $i$ 的库存容量                  | real |           | $i\in R$           |
-| $d_i^t$  | 在周期 $t$ 结点 $i$ 的消耗或补充库存 | real |           | $i\in N,t\in P$    |
-| $l_{ij}$ | 边 $(i,j)$ 上的运输费                | real |           | $i,j\in N,i\neq j$ |
+| Constant | Description                          | Type | Range | Remark             |
+| -------- | ------------------------------------ | ---- | ----- | ------------------ |
+| $a_i$    | 单位库存持有成本(仓库和客户)         | real |       | $i\in N$           |
+| $Q$      | 车的容量                             | real |       |                    |
+| $B_i$    | 客户 $i$ 的最低库存水平              | real |       | $i\in R$           |
+| $C_i$    | 客户 $i$ 的库存容量                  | real |       | $i\in R$           |
+| $d_i^t$  | 在周期 $t$ 结点 $i$ 的消耗或补充库存 | real |       | $i\in N,t\in P$    |
+| $l_{ij}$ | 边 $(i,j)$ 上的运输费                | real |       | $i,j\in N,i\neq j$ |
 
 
 ## Decision
@@ -38,7 +37,7 @@
 | $I_i^t$ | 结点 $i$ 在周期 $t$ 结束的库存量，t=0表示初始库存 | real |  | $i\in N,t\in P$ |
 | $Z_i^t$ | 客户 $i$ 在周期 $t$ 是否被访问 | bool | $\{0,1\}$ | $i\in R,t\in P$ |
 | $x_{ij}^t$ | 边 $(i,j)$ 是否在周期 $t$ 被访问   | bool | $\{0,1\}$ | $i,j \in N,i\neq j,t\in P$ |
-| $w_i^t$ | 车在周期 $t$ 给客户 $i$ 的送货量 | real |  | $i\in R,t\in P$ |
+| $w_i^t$ | 车在周期 $t$ 给客户 $i$ 的送货量 | real | $[0\ , \ Q]$ | $i\in R,t\in P$ |
 
 ### Convention and Function
 
@@ -63,61 +62,57 @@ $$
   $$
 
 
+- 如果不访问仓库 $i$ ，则配送量为零；如果访问它，则配送量大于零
+  $$
+  \begin{eqnarray*}
+  w_i^t+(1-Z_i^t)>0 \tag{3} \\
+  \\ 
+  w_i^t\leqslant Q*Z_i^t \tag{4} \\
+  \\
+  i \in R\ \ ,\ \ t\in P
+  \end{eqnarray*}
+  $$
+
 
 - 车辆不超载
   $$
   \begin{split}
   \sum_{i\in R}w_i^t-Q\leqslant 0 \ \ \ , \ \ \ t\in P
-  \end{split}\tag{3}
+  \end{split}\tag{5}
   $$
 
 - 客户每周期库存不超过客户容量 $C_i$ ，不低于最低库存量 $B_i$ 
 
-  - 如果在周期 $t$ 给客户 $i$ 送货，要满足上界条件：
-    $$
-    I_i^{t-1}+w_i^t \leqslant C_i\ \ \ ,\ \ if\ Z_i^t=1
-    $$
-
-  - 如果在周期 $t$ 不给客户 $i$ 送货，要满足下界条件：
-    $$
-    I_i^{t-1}-d_i^t \geqslant B_i\ \ \ ,\ \ if \ Z_i^t=0
-    $$
-
-
-
-  - **综上**
 
 $$
 \begin{eqnarray*}
-I_i^{t-1}+w_i^t-M(1-Z_i^t)-C_i\leqslant 0 \tag{4} \\
+I_i^{t-1}+w_i^t-C_i\leqslant 0 \tag{6} \\
 \\ 
-I_i^{t-1}-d_i^t+MZ_i^t-B_i\geqslant 0 \tag{5} \\
+I_i^{t-1}-d_i^t-B_i\geqslant 0 \tag{7} \\
 \\
 i\in R,t\in P
 \end{eqnarray*}
 $$
 
-
-
-- 只有车从仓库出发送货，仓库才有库存小于零的可能
+- 仓库库存必须大于等于零
   $$
   \begin{split}
-  I_0^t-\sum_{i \in R}w_i^t+(1-Z_0^t)M \geqslant 0 \ \ \ , \ \ t\in P
-  \end{split}\tag{6}
+  I_0^{t-1}-\sum_{i \in R}w_i^t \geqslant 0 \ \ \ , \ \ t\in P
+  \end{split}\tag{8}
   $$
 
 - 仓库库存更新
   $$
   \begin{split}
   I_0^t=I_0^{t-1}+d_0^t-\sum_{i\in R}w_i^t\ \ \ , \ \ t\in P
-  \end{split}\tag{7}
+  \end{split}\tag{9}
   $$
 
 - 客户库存更新
   $$
   \begin{split}
   I_i^t=I_i^{t-1}-d_i^t+w_i^t\ \ \ ,\ \ i\in R,t\in P
-  \end{split}\tag{8}
+  \end{split}\tag{10}
   $$
 
 - 车辆形成回路，且保持度约束
@@ -125,7 +120,7 @@ $$
   \begin{eqnarray*}
   \sum_{j\in N}x_{ij}^t=
   \sum_{j\in N}x_{ji}^t=
-  Z_i^t \tag{9} \ \ \ \ \ \ 
+  Z_i^t \tag{11} \ \ \ \ \ \ 
   i\in N\ ,\ i\neq j\ ,\ t\in P
   \end{eqnarray*}
   $$
@@ -136,8 +131,9 @@ $$
   u_i^t-u_j^t+|N|x_{ij}^t\leqslant |N|-1\ \ \ ,\ \ \ i,j\in R,i\neq j \\
   \\
   t\in P\ \ ,\ 1\leqslant u_i^t\ ,\ u_j^t\leqslant|N|
-  \end{split}\tag{10}
+  \end{split}\tag{12}
   $$
+
 
 
 
