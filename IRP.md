@@ -27,7 +27,7 @@
 | Variable     | Description                                                | Type | Domain     | Remark                                                     |
 | -------------- | ------------------------------------------------------------ | ---- | ------------- | ------------------------------------------------------------ |
 | $I_i^t$ | 结点 $i$ 在周期 $t$ 结束的库存量，t=0表示初始库存 | real |  | $i\in N,t\in P$ |
-| $Z_i^t$ | 客户 $i$ 在周期 $t$ 是否被访问 | bool | $\{0,1\}$ | $i\in R,t\in P$ |
+| $Z_i^t$ | 结点 $i$ 在周期 $t$ 是否被访问，$Z_0^t$ 表示车是否从仓库出发 | bool | $\{0,1\}$ | $i\in N,t\in P$ |
 | $x_{ij}^t$ | 边 $(i,j)$ 是否在周期 $t$ 被访问   | bool | $\{0,1\}$ | $i,j \in N,i\neq j,t\in P$ |
 | $w_i^t$ | 车在周期 $t$ 给客户 $i$ 的送货量 | real | $[0\ , \ Q]$ | $i\in R,t\in P$ |
 
@@ -56,11 +56,9 @@ $$
 
 - 如果不访问仓库 $i$ ，则配送量为零
   $$
-  \begin{eqnarray*}
-  w_i^t\leqslant Q*Z_i^t \tag{3} \\
-  \\
-  i \in R\ \ ,\ \ t\in P
-  \end{eqnarray*}
+  \begin{split}
+  w_i^t- Q*Z_i^t \leqslant 0 \ \ \ \ ,\ \ \ i \in R\ \ ,\ \ t\in P
+  \end{split}\tag{3}
   $$
 
 
@@ -84,7 +82,7 @@ i\in R,t\in P
 \end{eqnarray*}
 $$
 
-- 仓库库存必须大于等于零
+- 仓库库存量必须大于等于零
   $$
   \begin{split}
   I_0^{t-1}-\sum_{i \in R}w_i^t \geqslant 0 \ \ \ , \ \ t\in P
@@ -123,8 +121,6 @@ $$
   t\in P\ \ ,\ 1\leqslant u_i^t\ ,\ u_j^t\leqslant|N|
   \end{split}\tag{11}
   $$
-
-
 
 
 ## 尝试
