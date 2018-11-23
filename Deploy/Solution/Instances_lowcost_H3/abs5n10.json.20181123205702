@@ -1,4 +1,4 @@
-{"author":"lcg","algorithm":"gurobi","thread":"1","cpu":"Intel Celeron N2950 1.83GHz","ram":"4G 1333MHz","language":"C++","compiler":"VS2017","os":"Windows 10","problem":"InventoryRouting","instance":"abs5n10.json","duration":"0.894000s","obj":1938.1800000000003,"email":"","date":""}
+{"author":"lcg","algorithm":"gurobi","thread":"1","cpu":"Intel Celeron N2950 1.83GHz","ram":"4G 1333MHz","language":"C++","compiler":"VS2017","os":"Windows 10","problem":"InventoryRouting","instance":"abs5n10.json","duration":"1.025000s","obj":1938.1800000000003,"email":"","date":""}
 {
  "allRoutes": [
   {

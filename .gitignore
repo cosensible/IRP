@@ -250,4 +250,5 @@ ModelManifest.xml
 /Deploy/Solution/*.json*
 /Deploy/Visualization/*.html
 /Lib/*
+/Deploy/Solution/*
 /x64/*

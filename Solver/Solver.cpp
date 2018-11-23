@@ -406,14 +406,32 @@ bool Solver::optimize(Solution &sln, ID workerId) {
 		}
 		model.optimize();
 
+		//cout << "是否访问节点：" << endl;
+		//for (int i = 0; i < nodeNum; ++i) {
+		//	cout << isNodeVisited[2][i].get(GRB_StringAttr_VarName) << ":"
+		//		<< isNodeVisited[2][i].get(GRB_DoubleAttr_X) << "\t\t";
+
+		//}
+
+		//cout << "\n是否访问边：" << endl;
+		//for (int i = 0; i < nodeNum; ++i) {
+		//	for (int j = 0; j < nodeNum; ++j) {
+		//		if (i == j) { continue; }
+		//		cout << isArcVisited[2][i][j].get(GRB_StringAttr_VarName) << ":"
+		//			<< isArcVisited[2][i][j].get(GRB_DoubleAttr_X) << "\t";
+		//	}
+		//	cout << endl;
+		//}
+
 		for (int t = 1; t < periodNum; ++t) {
 			auto &routeInPeriod(*allRoutes.Add());
 			auto &route(*routeInPeriod.add_routes());
-			if (isNodeVisited[t][0].get(GRB_DoubleAttr_X)) {
+			if (static_cast<bool>(round(isNodeVisited[t][0].get(GRB_DoubleAttr_X)))) {
 				ID preNode = 0;
 				L:
 				for (int i = 1; i < nodeNum; ++i) {
-					if (i != preNode && isArcVisited[t][preNode][i].get(GRB_DoubleAttr_X)) {
+					if (i != preNode && static_cast<bool>(round(isArcVisited[t][preNode][i].get(GRB_DoubleAttr_X)))) {
+						//cout << preNode << "->" << i << endl;
 						auto &deliveries(*route.add_deliveries());
 						deliveries.set_node(i);
 						deliveries.set_quantity(round(delivery.at(t, i).get(GRB_DoubleAttr_X)));
@@ -434,22 +452,7 @@ bool Solver::optimize(Solution &sln, ID workerId) {
 		//		printf("%s : %.20lf\n", delivery.at(t, i).get(GRB_StringAttr_VarName), delivery.at(t, i).get(GRB_DoubleAttr_X));
 		//	}
 		//}
-		//cout << "是否访问节点：" << endl;
-		//for (int i = 0; i < nodeNum; ++i) {
-		//	cout << isNodeVisited[2][i].get(GRB_StringAttr_VarName) << ":"
-		//		<< isNodeVisited[2][i].get(GRB_DoubleAttr_X) << "\t\t";
 
-		//}
-
-		//cout << "\n是否访问边：" << endl;
-		//for (int i = 0; i < nodeNum; ++i) {
-		//	for (int j = 0; j < nodeNum; ++j) {
-		//		if (i == j) { continue; }
-		//		cout << isArcVisited[2][i][j].get(GRB_StringAttr_VarName) << ":"
-		//			<< isArcVisited[2][i][j].get(GRB_DoubleAttr_X) << "\t";
-		//	}
-		//	cout << endl;
-		//}
 	}
 	catch (GRBException e) {
 		cout << "Error code = " << e.getErrorCode() << endl;
@@ -459,6 +462,13 @@ bool Solver::optimize(Solution &sln, ID workerId) {
 		cout << "Error during optimization" << endl;
 	}
 
+	for (int t = 1; t < periodNum; ++t) {
+		for (int i = 0; i < nodeNum; ++i) {
+			delete[] isArcVisited[t][i];
+		}
+		delete[] isArcVisited[t];
+	}
+	delete[] isArcVisited;
     Log(LogSwitch::Szx::Framework) << "worker " << workerId << " ends." << endl;
     return status;
 }

@@ -1,0 +1,111 @@
+{"author":"lcg","algorithm":"gurobi","thread":"1","cpu":"Intel Celeron N2950 1.83GHz","ram":"4G 1333MHz","language":"C++","compiler":"VS2017","os":"Windows 10","problem":"InventoryRouting","instance":"abs1n20.json","duration":"2.957000s","obj":2267.32,"email":"","date":""}
+{
+ "allRoutes": [
+  {
+   "routes": [
+    {
+     "deliveries": []
+    }
+   ]
+  },
+  {
+   "routes": [
+    {
+     "deliveries": [
+      {
+       "node": 7,
+       "quantity": 30
+      },
+      {
+       "node": 10,
+       "quantity": 92
+      },
+      {
+       "node": 17,
+       "quantity": 81
+      },
+      {
+       "node": 11,
+       "quantity": 51
+      },
+      {
+       "node": 13,
+       "quantity": 94
+      },
+      {
+       "node": 5,
+       "quantity": 89
+      },
+      {
+       "node": 14,
+       "quantity": 144
+      },
+      {
+       "node": 15,
+       "quantity": 46
+      },
+      {
+       "node": 9,
+       "quantity": 42
+      },
+      {
+       "node": 6,
+       "quantity": 39
+      },
+      {
+       "node": 3,
+       "quantity": 64
+      },
+      {
+       "node": 12,
+       "quantity": 40
+      },
+      {
+       "node": 8,
+       "quantity": 110
+      },
+      {
+       "node": 1,
+       "quantity": 12
+      },
+      {
+       "node": 2,
+       "quantity": 118
+      },
+      {
+       "node": 4,
+       "quantity": 198
+      },
+      {
+       "node": 20,
+       "quantity": 58
+      },
+      {
+       "node": 16,
+       "quantity": 43
+      },
+      {
+       "node": 18,
+       "quantity": 88
+      },
+      {
+       "node": 19,
+       "quantity": 160
+      },
+      {
+       "node": 0,
+       "quantity": -1599
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "routes": [
+    {
+     "deliveries": []
+    }
+   ]
+  }
+ ]
+}
