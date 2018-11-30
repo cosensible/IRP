@@ -1,0 +1,100 @@
+{"author":"lcg","algorithm":"gurobi","thread":"1","cpu":"Intel Celeron N2950 1.83GHz","ram":"4G 1333MHz","language":"C++","compiler":"VS2017","os":"Windows 10","problem":"InventoryRouting","instance":"abs5n15.json","duration":"2.552000s","obj":2160.59,"email":"","date":""}
+{
+ "allRoutes": [
+  {
+   "routes": [
+    {
+     "deliveries": []
+    }
+   ]
+  },
+  {
+   "routes": [
+    {
+     "deliveries": [
+      {
+       "node": 8,
+       "quantity": 86
+      },
+      {
+       "node": 12,
+       "quantity": 14
+      },
+      {
+       "node": 13,
+       "quantity": 110
+      },
+      {
+       "node": 11,
+       "quantity": 30
+      },
+      {
+       "node": 2,
+       "quantity": 104
+      },
+      {
+       "node": 5,
+       "quantity": 142
+      },
+      {
+       "node": 14,
+       "quantity": 16
+      },
+      {
+       "node": 4,
+       "quantity": 44
+      },
+      {
+       "node": 6,
+       "quantity": 26
+      },
+      {
+       "node": 3,
+       "quantity": 116
+      },
+      {
+       "node": 1,
+       "quantity": 68
+      },
+      {
+       "node": 15,
+       "quantity": 110
+      },
+      {
+       "node": 9,
+       "quantity": 144
+      },
+      {
+       "node": 0,
+       "quantity": -1010
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "routes": [
+    {
+     "deliveries": [
+      {
+       "node": 10,
+       "quantity": 159
+      },
+      {
+       "node": 7,
+       "quantity": 28
+      },
+      {
+       "node": 8,
+       "quantity": 86
+      },
+      {
+       "node": 0,
+       "quantity": -273
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

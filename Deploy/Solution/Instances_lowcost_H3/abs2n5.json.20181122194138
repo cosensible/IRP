@@ -1,0 +1,51 @@
+{"author":"lcg","algorithm":"gurobi","thread":"1","cpu":"Intel Celeron N2950 1.83GHz","ram":"4G 1333MHz","language":"C++","compiler":"VS2017","os":"Windows 10","problem":"InventoryRouting","instance":"abs2n5.json","duration":"0.233000s","obj":988.66000000000008,"email":"","date":""}
+{
+ "allRoutes": [
+  {
+   "routes": [
+    {
+     "deliveries": []
+    }
+   ]
+  },
+  {
+   "routes": [
+    {
+     "deliveries": [
+      {
+       "node": 1,
+       "quantity": 31
+      },
+      {
+       "node": 2,
+       "quantity": 120
+      },
+      {
+       "node": 5,
+       "quantity": 24
+      },
+      {
+       "node": 4,
+       "quantity": 38
+      },
+      {
+       "node": 3,
+       "quantity": 24
+      },
+      {
+       "node": 0,
+       "quantity": -237
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "routes": [
+    {
+     "deliveries": []
+    }
+   ]
+  }
+ ]
+}
