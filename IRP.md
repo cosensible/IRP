@@ -26,9 +26,9 @@
 
 | Variable     | Description                                                | Type | Domain     | Remark                                                     |
 | -------------- | ------------------------------------------------------------ | ---- | ------------- | ------------------------------------------------------------ |
-| $I_i^t$ | 结点 $i$ 在周期 $t$ 结束的库存量，t=0表示初始库存 | real |  | $i\in N,t\in P$ |
+| $I_i^t$ | 结点 $i$ 在周期 $t$ 结束的库存量，t=0表示初始库存 | real |  | $i\in N,t\in P+\{0\}$ |
 | $Z_i^t$ | 结点 $i$ 在周期 $t$ 是否被访问，$Z_0^t$ 表示车是否从仓库出发 | bool | $\{0,1\}$ | $i\in N,t\in P$ |
-| $x_{ij}^t$ | 边 $(i,j)$ 是否在周期 $t$ 被访问   | bool | $\{0,1\}$ | $i,j \in N,i\neq j,t\in P$ |
+| $x_{ij}^t$ | 边 $(i,j)$ 是否在周期 $t$ 被访问 | bool | $\{0,1\}$ | $i,j \in N,i\neq j,t\in P$ |
 | $w_i^t$ | 车在周期 $t$ 给客户 $i$ 的送货量 | real | $[0\ , \ Q]$ | $i\in R,t\in P$ |
 
 ### Convention and Function
@@ -40,7 +40,7 @@ null
 
 $$
 \begin{split}
-Minimize \  \sum_{t\in P}\sum_{i\in N}a_iI_i^t\ +\ \sum_{t\in P}\sum_{i\in N}\sum_{j\in N}l_{ij}x_{ij}^t\ \ , \ \ \ i\neq j
+Minimize \  \sum_{t\in P+\{0\}}\sum_{i\in N}a_iI_i^t\ +\ \sum_{t\in P}\sum_{i\in N}\sum_{j\in N}l_{ij}x_{ij}^t\ \ , \ \ \ i\neq j
 \end{split}\tag{1}
 $$
 
@@ -54,13 +54,17 @@ $$
   $$
 
 
+
+
 - 如果不访问仓库 $i$ ，则配送量为零
   $$
   \begin{split}
-  w_i^t- Q*Z_i^t \leqslant 0 \ \ \ \ ,\ \ \ i \in R\ \ ,\ \ t\in P
+  w_i^t- C_i*Z_i^t \leqslant 0 \ \ \ \ ,\ \ \ i \in R\ \ ,\ \ t\in P
   \end{split}\tag{3}
   $$
 
+
+·
 
 - 车辆不超载
   $$
@@ -92,7 +96,7 @@ $$
 - 仓库库存更新
   $$
   \begin{split}
-  I_0^t=I_0^{t-1}+d_0^t-\sum_{i\in R}w_i^t\ \ \ , \ \ t\in P
+  I_0^t=I_0^{t-1}-d_0^t-\sum_{i\in R}w_i^t\ \ \ , \ \ t\in P
   \end{split}\tag{8}
   $$
 
@@ -123,6 +127,10 @@ $$
   $$
 
 
+
+
+
+
 ## 尝试
 
-把条件（7）换成 $I_i^{t-1}-d_i^t-B_i \geqslant 0$。
+把条件（6）换成 $I_i^{t-1}-d_i^t-B_i \geqslant 0$。
