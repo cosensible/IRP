@@ -109,14 +109,13 @@ void testCoordList2D() {
 		{ 0, 0 },
 		{ 100, 200 },{ 200, 100 },
 		{ 200, 300 },{ 300, 200 },
-		{ 100, 300 },{ 300, 100 }
 		});
 	List<int> nl({ 0,1,2 });
-	TspCache_BinTreeImpl tsp("test6", cl);
+	TspCache_BinTreeImpl tsp("test5", cl);
 	tsp.readFileToCache(".\\LKH3Interface\\tour");
 
 	Graph::Tour sln;
-	std::cout << std::endl << tsp.solve(sln, nl, 4) << std::endl;
+	std::cout << std::endl << tsp.solve(sln, nl, 1) << std::endl;
 	for (auto n : sln) {
 		std::cout << n << " ";
 	}

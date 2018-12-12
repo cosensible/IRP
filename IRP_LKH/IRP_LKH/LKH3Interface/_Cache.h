@@ -179,14 +179,14 @@ struct TspCache_BinTreeImpl : public TspCacheBase {
 		toursCache.clear();
 		GetAllFormatFiles(cachePath, tourNames, ".tour");
 		for (auto t : tourNames) {
+			if (t.find(insName) == std::string::npos) { continue; }
 			TourAndCost tourAndCost;
 			NodeList nl;
-			std::ifstream ifTour(t);
 			unsigned len = t.find("tour\\") + 5, len1 = t.find("_p");
 			std::string map = t.substr(0, len) + t.substr(len, len1 - len) + ".map";
 			int round = stoi(t.substr(len1 + 2));
-			std::cout << "round : " << round << std::endl;
-			std::cout << "node map : " << map << std::endl;
+			//std::cout << "round : " << round << std::endl;
+			//std::cout << "node map : " << map << std::endl;
 			std::ifstream nodemap(map);
 			int nodeNumber = -1;
 			while (std::getline(nodemap, map)) {
@@ -203,6 +203,7 @@ struct TspCache_BinTreeImpl : public TspCacheBase {
 			}
 			std::cout << std::endl;
 
+			std::ifstream ifTour(t);
 			std::string line;
 			for (int i = 0; std::getline(ifTour, line); ++i) {
 				if (1 == i) { 
