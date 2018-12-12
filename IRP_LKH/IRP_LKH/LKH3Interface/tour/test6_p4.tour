@@ -1,0 +1,11 @@
+NAME : test6.589.tour
+COMMENT : Length = 589
+COMMENT : Found by LKH [Keld Helsgaun] Wed Dec 12 19:27:54 2018
+TYPE : TOUR
+DIMENSION : 3
+TOUR_SECTION
+1
+2
+3
+-1
+EOF

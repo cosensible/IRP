@@ -1,0 +1,8 @@
+PROBLEM_FILE = .\LKH3Interface\instance\test6_p4.tsp
+MOVE_TYPE = 5
+PATCHING_C = 3
+PATCHING_A = 2
+POPULATION_SIZE=2
+RUNS = 10
+POPULATION_SIZE=2
+OUTPUT_TOUR_FILE = .\LKH3Interface\tour\test6_p4.tour

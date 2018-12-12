@@ -252,3 +252,9 @@ ModelManifest.xml
 /Lib/*
 /Deploy/Solution/*
 /x64/*
+
+/IRP_LKH/.vs/*
+/IRP_LKH/Debug/*
+/IRP_LKH/IRP_LKH/Debug/*
+/IRP_LKH/Lib/*
+/IRP_LKH/x64/*

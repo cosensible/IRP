@@ -1,0 +1,2 @@
+PROBLEM_FILE = abs1n5.tsp
+TOUR_FILE=abs1n5.tour
