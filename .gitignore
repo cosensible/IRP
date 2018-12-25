@@ -251,6 +251,7 @@ ModelManifest.xml
 /Deploy/Checker.exe
 /Deploy/log.csv
 /Deploy/Solution/*.json*
+/Deploy/Solution/*/*
 /Deploy/Visualization/*.html
 /Deploy/ClassicSolution/
 /Deploy/Instance/*
