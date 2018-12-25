@@ -81,12 +81,15 @@ void GetAllFormatFiles(std::string path, std::vector<std::string>& files, std::s
 
 namespace szx {
 
+	static const unsigned N = 200;
+
 struct TspCacheBase {
-    using ID = Graph::ID;
+	using ID = Graph::ID;
     using NodeList = List<ID>; // the `nodes` should be ordered in increasing order during the traverse.
-    using NodeSet = List<bool>; // the size of the set should be the same as the node number. // OPTIMIZE[szx][5]: use bitset?
+	using NodeSet = std::bitset<N>; // the size of the set should be the same as the node number. // OPTIMIZE[szx][5]: use bitset?
     using TraverseEvent = std::function<bool(const Graph::Tour&)>;
-	using TourAndCost = std::pair<NodeList, double>;
+
+	using TourAndCost = std::pair<NodeList, int>;
 
 	TspCacheBase() = default;
 	TspCacheBase(const std::string &name) :insName(name) {}
@@ -102,17 +105,17 @@ struct TspCacheBase {
 
     // return a non-empty tour if there is cached solution for such node set, otherwise cache miss happens.
     // if the returned tour is `tour`, call `tour.empty()` to check the status.
-    virtual const Graph::Tour& get(const NodeSet &containNode) const = 0;
+    virtual const TourAndCost &get(const NodeSet &containNode) const = 0;
 	
 	// `nodes` is the set of nodes in the tour and it is pre-sorted 
-    virtual TourAndCost get(const NodeList &nodes) const = 0;
+    virtual const TourAndCost &get(const NodeList &nodes) const = 0;
 
     // return true is overwriting happens, otherwise a new entry is added.
-	virtual bool set(const Graph::Tour &sln, int tourCost) = 0;
+	virtual bool set(const TourAndCost &sln, const NodeSet &containNode) = 0;
     // the node set in `sln` and `nodes` should be the same.
     // return true is overwriting happens, otherwise a new entry is added.
-    virtual bool set(const Graph::Tour &sln, const NodeList &nodes) = 0;
-    virtual bool set(const Graph::Tour &sln, const NodeSet &containNode) = 0;
+    // virtual bool set(const Graph::Tour &sln, const NodeList &nodes) = 0;
+    virtual bool set(const TourAndCost &sln, const NodeList &orderedNodes) = 0;
 
     // `onTour` return true if the traverse should be breaked, otherwise the loop will continue.
     // return true if no break happens.
@@ -124,48 +127,56 @@ struct TspCacheBase {
 	virtual void printCache() const = 0;
 protected:
     //ID nodeNum;
-
-	List<TourAndCost> toursCache;
+	//List<TourAndCost> toursCache;
+	std::multimap<std::size_t, TourAndCost> toursCache;
 	std::vector<std::string> tourNames;	// file names of all tour with precomputed optimal
 	Graph::CoordList<> coordList;	// coordinates of all nodes in current instance
 	std::string insName;	// name of current instance
+
+	std::hash<NodeSet> hash_fn;
 };
 
 
 struct TspCache_BinTreeImpl : public TspCacheBase {
     using TspCacheBase::TspCacheBase;
 
+	static const TourAndCost& emptyTour() {
+		static const TourAndCost et;
+		return et;
+	}
 
-    virtual const Graph::Tour& get(const NodeSet &containNode) const override {
-        return Graph::Tour();
-    }
-
-    virtual TourAndCost get(const NodeList &nodes) const override {
-        //NodeSet containNode(nodeNum, false);
-        //for (auto n = nodes.begin(); n != nodes.end(); ++n) { containNode[*n] = true; }
-        //return get(containNode);
-		if (nodes.size() > 1) {
-			for (auto cache : toursCache) {
-				NodeList tour(cache.first);
-				sort(tour.begin(), tour.end());
-				if (tour == nodes) { return cache; }
-			}
+    virtual const TourAndCost &get(const NodeSet &nodeSet) const override {
+		auto hValue = hash_fn(nodeSet);
+		auto iter = toursCache.find(hValue);
+		if (iter == toursCache.end()) { return emptyTour(); }
+		while (iter != toursCache.upper_bound(hValue)) {
+			NodeSet containNode;
+			for (const auto &n : iter->second.first) { containNode.set(n); }
+			if (containNode == nodeSet) { return iter->second; }
+			++iter;
 		}
-		return TourAndCost();
+		return emptyTour();
     }
 
-	virtual bool set(const Graph::Tour &sln, int cost) override {
-		if (sln.size() > 1 && cost > 0) {
-			toursCache.push_back({ sln,cost });
+    virtual const TourAndCost &get(const NodeList &nodes) const override {
+		NodeSet containNode;
+		for (const auto &n : nodes) { containNode.set(n); }
+		return get(containNode);
+    }
+
+	virtual bool set(const TourAndCost &sln, const NodeSet &containNode) override {
+		if (get(containNode).first.empty()) {
+			auto hValue = hash_fn(containNode);
+			toursCache.insert({ hValue,sln });
 			return true;
 		}
+		//std::cout << "This TSP already exists." << std::endl;
 		return false;
 	}
-    virtual bool set(const Graph::Tour &sln, const NodeList &nodes) override {
-        return false;
-    }
-    virtual bool set(const Graph::Tour &sln, const NodeSet &containNode) override {
-        return false;
+    virtual bool set(const TourAndCost &sln, const NodeList &nodes) override {
+		NodeSet nodeSet;
+		for (const auto &n : nodes) { nodeSet.set(n); }
+		return set(sln, nodeSet);
     }
 
     virtual bool forEach(std::function<bool(const Graph::Tour&)> onCacheEntry) const override {
@@ -207,7 +218,7 @@ struct TspCache_BinTreeImpl : public TspCacheBase {
 			std::string line;
 			for (int i = 0; std::getline(ifTour, line); ++i) {
 				if (1 == i) { 
-					tourAndCost.second = std::stod(line.substr(19)); 
+					tourAndCost.second = std::stoi(line.substr(19)); 
 					//std::cout << "tour cost = " << tourAndCost.second << std::endl;
 				}
 				if (i > 5) {
@@ -215,7 +226,7 @@ struct TspCache_BinTreeImpl : public TspCacheBase {
 					tourAndCost.first.push_back(nl[std::stoi(line) - 1]);
 				}
 			}
-			toursCache.push_back(tourAndCost);
+			set(tourAndCost, tourAndCost.first);
 			std::cout << "read tour : " << t << " success" << std::endl;
 		}
 		std::cout << "Initialize cache success." << std::endl;
@@ -285,7 +296,7 @@ struct TspCache_BinTreeImpl : public TspCacheBase {
 		std::ifstream ifTour(vname.str());
 		for (int i = 0; std::getline(ifTour, line); ++i) {
 			if (1 == i) {
-				cost = std::stod(line.substr(19));
+				cost = std::stoi(line.substr(19));
 				//std::cout << "tour cost = " << tourAndCost.second << std::endl;
 			}
 			if (i > 5) {
@@ -293,7 +304,10 @@ struct TspCache_BinTreeImpl : public TspCacheBase {
 				sln.push_back(nodeList[std::stoi(line) - 1]);
 			}
 		}
-		toursCache.push_back({ sln,cost });
+		NodeSet nodeSet;
+		for (const auto &n : sln) { nodeSet.set(n); }
+		auto hValue = hash_fn(nodeSet);
+		toursCache.insert({ hValue,{ sln,cost } });
 		std::cout << "insert optimal into cache success! " << "cache : " << std::endl;
 		printCache();
 		// TODO[szx][0]: retrieve solution path.
@@ -302,11 +316,11 @@ struct TspCache_BinTreeImpl : public TspCacheBase {
 
 	virtual void printCache() const {
 		for (auto cache : toursCache) {
-			for (auto node : cache.first) {
+			for (auto node : cache.second.first) {
 				std::cout << node << " ";
 			}
 			std::cout << std::endl;
-			std::cout << cache.second << std::endl;
+			std::cout << cache.second.second << std::endl;
 			std::cout << std::endl;
 		}
 	}

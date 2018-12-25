@@ -101,37 +101,132 @@
 #include <fstream>
 #include <vector>
 #include <stdio.h>
+#include <algorithm>
+#include <chrono>
+#include <random>
+
+using namespace std;
 using namespace szx;
 
-// testing and sample code.
-void testCoordList2D() {
-	Graph::CoordList<> cl({
-		{ 0, 0 },
-		{ 100, 200 },{ 200, 100 },
-		{ 200, 300 },{ 300, 200 },
-		});
-	List<int> nl({ 0,1,2 });
-	TspCache_BinTreeImpl tsp("test5", cl);
-	tsp.readFileToCache(".\\LKH3Interface\\tour");
+//// testing and sample code.
+//void testCoordList2D() {
+//	Graph::CoordList<> cl({
+//		{ 0, 0 },
+//		{ 100, 200 },{ 200, 100 },
+//		{ 200, 300 },{ 300, 200 },
+//		{ 300, 400 },{ 400, 300 },
+//		});
+//	List<int> nl({ 0,1,3,2,4 });
+//	TspCache_BinTreeImpl tsp("test6", cl);
+//	tsp.readFileToCache(".\\LKH3Interface\\tour");
+//
+//	Graph::Tour sln;
+//	std::cout << std::endl << tsp.solve(sln, nl, 5) << std::endl;
+//	for (auto n : sln) {
+//		std::cout << n << " ";
+//	}
+//	std::cout << std::endl;
+//	// if (solve(sln, cl,1)) {
+//	// EXTEND[szx][0]: record solution path.
+//	//}
+//}
 
-	Graph::Tour sln;
-	std::cout << std::endl << tsp.solve(sln, nl, 1) << std::endl;
-	for (auto n : sln) {
-		std::cout << n << " ";
+void testTspCache() {
+	int nodeNum = 200;
+	int tourNum = 100000;
+	int minNodeNumInTour = 3;
+	int writeCount = 4 * tourNum;
+	int readCount = 12 * tourNum;
+
+	mt19937 rgen;
+	chrono::steady_clock::time_point begin, end;
+
+	cerr << "init test data: ";
+	begin = chrono::steady_clock::now();
+	TspCache::NodeList nodes(nodeNum);
+	for (int i = 0; i < nodeNum; ++i) { nodes[i] = i; }
+	vector<TspCache::TourAndCost> tours(tourNum);
+	for (int i = 0; i < tourNum; ++i) {
+		if (rgen() % 1000 != 0) { shuffle(nodes.begin(), nodes.end(), rgen); } // small number of duplicated paths with different distances.
+		int tourLen = (rgen() % (nodeNum - minNodeNumInTour)) + minNodeNumInTour;
+		tours[i].first.resize(tourLen);
+		for (int n = 0; n < tourLen; ++n) { tours[i].first[n] = nodes[n]; }
+		tours[i].second = rgen() % 10000 - 100; // allow negative distance.
 	}
-	std::cout << std::endl;
-	// if (solve(sln, cl,1)) {
-	// EXTEND[szx][0]: record solution path.
-	//}
+	TspCache::NodeSet containNode;
+	end = chrono::steady_clock::now();
+	cerr << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "ms" << endl;
+
+	cerr << endl;
+
+	cerr << "zero overhead write test (x" << writeCount << "): ";
+	rgen.seed();
+	begin = chrono::steady_clock::now();
+	int overwriteCount = 0;
+	for (int i = 0; i < writeCount; ++i) {
+		TspCache::TourAndCost &tour(tours[rgen() % tours.size()]); // pick a random tour.
+		for (const auto &n : tour.first) { containNode.set(n); }
+		++overwriteCount;
+	}
+	end = chrono::steady_clock::now();
+	cerr << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "ms" << endl;
+
+	cerr << "              write test (x" << writeCount << "): ";
+	rgen.seed();
+	begin = chrono::steady_clock::now();
+	overwriteCount = 0;
+	TspCache tspCache;
+	for (int i = 0; i < writeCount; ++i) {
+		TspCache::TourAndCost &tour(tours[rgen() % tours.size()]); // pick a random tour.
+		containNode.reset();
+		for (const auto &n : tour.first) { containNode.set(n); }
+		overwriteCount += tspCache.set(tour, containNode); // add it to cache.
+	}
+	end = chrono::steady_clock::now();
+	cerr << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "ms" << endl;
+	cerr << "overwrite=" << overwriteCount << endl;
+
+	cerr << endl;
+
+	cerr << "zero overhead read test (x" << readCount << "): ";
+	rgen.seed();
+	begin = chrono::steady_clock::now();
+	int missCount = 0;
+	for (int i = 0; i < readCount; ++i) {
+		TspCache::TourAndCost &tour(tours[rgen() % tours.size()]); // pick a random tour.
+		containNode.reset();
+		for (const auto &n : tour.first) { containNode.set(n); }
+		for (int perturb = rgen() % 8 - 1; perturb > 0; --perturb) {
+			containNode[rgen() % nodeNum] = (rgen() & 1); // modify the node set randomly.
+		}
+		missCount += tour.first.empty();
+	}
+	end = chrono::steady_clock::now();
+	cerr << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "ms" << endl;
+
+	cerr << "              read test (x" << readCount << "): ";
+	rgen.seed();
+	begin = chrono::steady_clock::now();
+	missCount = 0;
+	for (int i = 0; i < readCount; ++i) {
+		TspCache::TourAndCost &tour(tours[rgen() % tours.size()]); // pick a random tour.
+		containNode.reset();
+		for (const auto &n : tour.first) { containNode.set(n); }
+		for (int perturb = rgen() % 8 - 1; perturb > 0; --perturb) {
+			containNode[rgen() % nodeNum] = (rgen() & 1); // modify the node set randomly.
+		}
+		const TspCache::TourAndCost &sln(tspCache.get(containNode));
+		missCount += sln.first.empty();
+	}
+	end = chrono::steady_clock::now();
+	cerr << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "ms" << endl;
+	cerr << "miss=" << missCount << endl;
 }
+
 
 
 int main(int argc, char *argv[]) 
 {
-	testCoordList2D();
-	//testCoordList3D();
-	//testAdjMat();
-	//testWeightedAdjList();
-	//testWeightedEdgeList();
+	testTspCache();
 	system("pause");
 }
