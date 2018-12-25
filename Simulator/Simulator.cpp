@@ -117,7 +117,7 @@ void Simulator::benchmark(int repeat) {
     task.instSet = "Instances_lowcost_H3/";
     //task.timeout = "180";
     //task.maxIter = "1000000000";
-    task.timeout = "3600";
+    task.timeout = "600";
     //task.maxIter = "1000000000";
     task.jobNum = "1";
     task.cfgPath = Env::DefaultCfgPath();
@@ -129,14 +129,14 @@ void Simulator::benchmark(int repeat) {
 	vector<String> instList(
 		{ "abs1n5", "abs2n5" ,"abs3n5","abs4n5","abs5n5",
 			"abs1n10", "abs2n10" ,"abs3n10","abs4n10","abs5n10",
-			"abs1n15", "abs2n15" ,"abs3n15","abs4n15","abs5n15",
-			"abs1n20", "abs2n20" ,"abs3n20","abs4n20","abs5n20",
-			"abs1n25", "abs2n25" ,"abs3n25","abs4n25","abs5n25",
-			"abs1n30", "abs2n30" ,"abs3n30","abs4n30","abs5n30",
-			"abs1n35", "abs2n35" ,"abs3n35","abs4n35","abs5n35",
-			"abs1n40", "abs2n40" ,"abs3n40","abs4n40","abs5n40",
-			"abs1n45", "abs2n45" ,"abs3n45","abs4n45","abs5n45",
-			"abs1n50", "abs2n50" ,"abs3n50","abs4n150","abs5n50"
+			//"abs1n15", "abs2n15" ,"abs3n15","abs4n15","abs5n15",
+			//"abs1n20", "abs2n20" ,"abs3n20","abs4n20","abs5n20",
+			//"abs1n25", "abs2n25" ,"abs3n25","abs4n25","abs5n25",
+			//"abs1n30", "abs2n30" ,"abs3n30","abs4n30","abs5n30",
+			//"abs1n35", "abs2n35" ,"abs3n35","abs4n35","abs5n35",
+			//"abs1n40", "abs2n40" ,"abs3n40","abs4n40","abs5n40",
+			//"abs1n45", "abs2n45" ,"abs3n45","abs4n45","abs5n45",
+			//"abs1n50", "abs2n50" ,"abs3n50","abs4n150","abs5n50"
 		});
     for (int i = 0; i < repeat; ++i) {
         //shuffle(instList.begin(), instList.end(), rgen);

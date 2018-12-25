@@ -242,19 +242,34 @@ ModelManifest.xml
 .fake/
 
 # user files
+/.vs/*
 /Analyzer/*
+/Checker/x64/*
+/Checker/Debug/*
 /Deploy/Solver.exe
 /Deploy/Simulator.exe
 /Deploy/Checker.exe
 /Deploy/log.csv
 /Deploy/Solution/*.json*
 /Deploy/Visualization/*.html
+/Deploy/ClassicSolution/*
+/Deploy/Instance/*
+/Simulator/x64/*
+/Simulator/Debug/*
+/Solver/x64/*
+/Solver/Debug/*
 /Lib/*
-/Deploy/Solution/*
 /x64/*
+/Debug/*
+/解分析/Classic/*
+/解分析/Instance/*
+/.ipynb_checkpoints
 
 /IRP_LKH/.vs/*
 /IRP_LKH/Debug/*
-/IRP_LKH/IRP_LKH/Debug/*
 /IRP_LKH/Lib/*
 /IRP_LKH/x64/*
+/IRP_LKH/IRP_LKH/Debug/*
+/IRP_LKH/IRP_LKH/x64/*
+/IRP_LKH/IRP_LKH/LKH3Interface/instance/*
+/IRP_LKH/IRP_LKH/LKH3Interface/tour/*
