@@ -10,7 +10,8 @@
 
 #include <functional>
 #include <bitset>
-#include <map>
+//#include <map>
+#include <unordered_map>
 #include <set>
 #include <string>
 #include <io.h>
@@ -105,10 +106,10 @@ struct TspCacheBase {
 
     // return a non-empty tour if there is cached solution for such node set, otherwise cache miss happens.
     // if the returned tour is `tour`, call `tour.empty()` to check the status.
-    virtual const TourAndCost &get(const NodeSet &containNode) const = 0;
+    virtual TourAndCost &get(const NodeSet &containNode) = 0;
 	
 	// `nodes` is the set of nodes in the tour and it is pre-sorted 
-    virtual const TourAndCost &get(const NodeList &nodes) const = 0;
+    virtual TourAndCost &get(const NodeList &nodes) = 0;
 
     // return true is overwriting happens, otherwise a new entry is added.
 	virtual bool set(const TourAndCost &sln, const NodeSet &containNode) = 0;
@@ -127,47 +128,45 @@ struct TspCacheBase {
 	virtual void printCache() const = 0;
 protected:
     //ID nodeNum;
-	//List<TourAndCost> toursCache;
-	std::multimap<std::size_t, TourAndCost> toursCache;
-	std::vector<std::string> tourNames;	// file names of all tour with precomputed optimal
 	Graph::CoordList<> coordList;	// coordinates of all nodes in current instance
 	std::string insName;	// name of current instance
-
-	std::hash<NodeSet> hash_fn;
 };
 
 
 struct TspCache_BinTreeImpl : public TspCacheBase {
     using TspCacheBase::TspCacheBase;
 
-	static const TourAndCost& emptyTour() {
-		static const TourAndCost et;
+	static TourAndCost& emptyTour() {
+		static TourAndCost et;
 		return et;
 	}
 
-    virtual const TourAndCost &get(const NodeSet &nodeSet) const override {
+	TourAndCost &get(const NodeSet &nodeSet) override {
 		auto hValue = hash_fn(nodeSet);
-		auto iter = toursCache.find(hValue);
-		if (iter == toursCache.end()) { return emptyTour(); }
-		while (iter != toursCache.upper_bound(hValue)) {
+		auto range = toursCache.equal_range(hValue);
+		for (auto it = range.first; it != range.second; ++it) {
 			NodeSet containNode;
-			for (const auto &n : iter->second.first) { containNode.set(n); }
-			if (containNode == nodeSet) { return iter->second; }
-			++iter;
+			for (const auto &n : it->second.first) { containNode.set(n); }
+			if (containNode == nodeSet) { return it->second; }
 		}
 		return emptyTour();
-    }
+	}
 
-    virtual const TourAndCost &get(const NodeList &nodes) const override {
+    TourAndCost &get(const NodeList &nodes) override {
 		NodeSet containNode;
 		for (const auto &n : nodes) { containNode.set(n); }
 		return get(containNode);
     }
 
 	virtual bool set(const TourAndCost &sln, const NodeSet &containNode) override {
-		if (get(containNode).first.empty()) {
-			auto hValue = hash_fn(containNode);
+		auto &res = get(containNode);
+		auto hValue = hash_fn(containNode);
+		if (res.first.empty()) {
 			toursCache.insert({ hValue,sln });
+			return true;
+		}
+		else if (sln.second < res.second) {
+			res = sln;
 			return true;
 		}
 		//std::cout << "This TSP already exists." << std::endl;
@@ -324,6 +323,11 @@ struct TspCache_BinTreeImpl : public TspCacheBase {
 			std::cout << std::endl;
 		}
 	}
+
+private:
+	std::unordered_multimap<std::size_t, TourAndCost> toursCache;
+	std::vector<std::string> tourNames;	// file names of all tour with precomputed optimal
+	std::hash<NodeSet> hash_fn;
 };
 
 
