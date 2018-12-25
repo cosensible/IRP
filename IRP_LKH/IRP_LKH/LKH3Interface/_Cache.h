@@ -111,6 +111,10 @@ struct TspCacheBase {
 	// `nodes` is the set of nodes in the tour and it is pre-sorted 
     virtual TourAndCost &get(const NodeList &nodes) = 0;
 
+	virtual const TourAndCost &get(const NodeSet &containNode) const = 0;
+
+	virtual const TourAndCost &get(const NodeList &nodes) const = 0;
+
     // return true is overwriting happens, otherwise a new entry is added.
 	virtual bool set(const TourAndCost &sln, const NodeSet &containNode) = 0;
     // the node set in `sln` and `nodes` should be the same.
@@ -157,6 +161,23 @@ struct TspCache_BinTreeImpl : public TspCacheBase {
 		for (const auto &n : nodes) { containNode.set(n); }
 		return get(containNode);
     }
+
+	const TourAndCost &get(const NodeSet &nodeSet) const override {
+		auto hValue = hash_fn(nodeSet);
+		auto range = toursCache.equal_range(hValue);
+		for (auto it = range.first; it != range.second; ++it) {
+			NodeSet containNode;
+			for (const auto &n : it->second.first) { containNode.set(n); }
+			if (containNode == nodeSet) { return it->second; }
+		}
+		return emptyTour();
+	}
+
+	const TourAndCost &get(const NodeList &nodes) const override {
+		NodeSet containNode;
+		for (const auto &n : nodes) { containNode.set(n); }
+		return get(containNode);
+	}
 
 	virtual bool set(const TourAndCost &sln, const NodeSet &containNode) override {
 		auto &res = get(containNode);
