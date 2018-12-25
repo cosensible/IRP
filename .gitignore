@@ -252,8 +252,9 @@ ModelManifest.xml
 /Deploy/log.csv
 /Deploy/Solution/*.json*
 /Deploy/Visualization/*.html
-/Deploy/ClassicSolution/*
+/Deploy/ClassicSolution/
 /Deploy/Instance/*
+!/Deploy/Instance/ReadMe.md
 /Simulator/x64/*
 /Simulator/Debug/*
 /Solver/x64/*
